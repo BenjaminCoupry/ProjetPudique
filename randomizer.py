@@ -33,14 +33,40 @@ def get_random_fibo():
     return result
 
 
+def random_byte():
+    """
+    Entier aléatoire entre 0 et 255.
+    Le générateur doit déjà avoir été initialisé avec init_fibo().
+    """
+    result = get_random_fibo()
+    while result >= 256:
+        result = get_random_fibo()
+    return result
+
+
+def random_integer_bits(nb_bits):
+    """
+    Génère un nombre entier sur nb_bits bits.
+    Le générateur doit déjà avoir été initialisé avec init_fibo().
+    """
+    result = 0
+    while nb_bits >= 8:
+        result <<= 8
+        result |= random_byte()
+        nb_bits -= 8
+    if nb_bits != 0:
+        result <<= nb_bits
+        result |= random_byte() & (0xFF >> (8-nb_bits))  # Les nb_bits premiers bits de l'octet aléatoire
+    return result
+
+
 # Script de test et de démo :
 import matplotlib.pyplot as plt
-import random
+NB_BITS = 1000
 init_fibo(42)
-h = [get_random_fibo() for _ in range(1000000)]
-n = [h.count(i) for i in range(RANDOM_MAX)]
-print("Couverture =", len(set(h)) / RANDOM_MAX * 100, "%")
-plt.hist(h)
-plt.show()
-plt.plot(n)
+h = [random_integer_bits(NB_BITS) for _ in range(10000)]
+print("Couverture =", len(set(h)) / 2**NB_BITS * 100, "%")
+# Matlplotlib ne sait pas gérer les nombres de plus de 64 bits,
+# on affiche donc seulement le 64 bits de poids fort :
+plt.hist([i >> (NB_BITS - 64) for i in h])
 plt.show()
