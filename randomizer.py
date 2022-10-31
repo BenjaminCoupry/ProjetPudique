@@ -1,32 +1,46 @@
-RANDOM_MAX = 1009
+RANDOM_MAX = 257
+FIBO_HISTORY_LENGHT = 5
 
-fibo_seed = 0
-fibo_a = 0
-fibo_b = 0
-fibo_c = 0
+class S:
+    """
+    Classe contenant des variables statiques puisque
+    c'est le seul moyen de le faire en Python.
+    """
+    fibo_seed = 0
+    fibo_history = FIBO_HISTORY_LENGHT * [0]  # Le plus récent à la fin
+
 
 def init_fibo(seed):
     """
     seed : Entier < RANDOM_MAX et > 0
     """
-    global fibo_a
-    global fibo_b
-    global fibo_c
-    global fibo_seed
-    fibo_seed = seed
-    fibo_a = seed
-    fibo_b = (seed * 45 + 517) % seed
-    fibo_c = (seed * 87 + 341) % (seed + 3)
-
+    S.fibo_seed = seed
+    for i in range(FIBO_HISTORY_LENGHT):
+        S.fibo_history[i] = (seed ** (i + 2) + (i + 17)**4 * seed) % RANDOM_MAX
 
 def get_random_fibo():
     """
     Génère et renvoie le nombre suivant à partir de l'actuel, dans [0 ; RANDOM_MAX[ selo Fibo.
     """
-    global fibo_a
-    global fibo_b
-    global fibo_c
-    global fibo_seed
-    fibo_a, fibo_b, fibo_c = fibo_b, fibo_c, ((fibo_seed+3) * fibo_a**3 + ((fibo_seed+2)**2) * fibo_b**2 + ((fibo_seed+1)**3 + 5) * fibo_c) % RANDOM_MAX
-    return fibo_b
+    result = 0;
+    for i in range(FIBO_HISTORY_LENGHT):
+        coeff = (i*S.fibo_seed + S.fibo_history[0]) % 5
+        power = (i + S.fibo_seed + S.fibo_history[1] % 2) % 53
+        result += coeff * S.fibo_history[i] ** power
+        result %= RANDOM_MAX
+    S.fibo_history.append(result)
+    del S.fibo_history[0]
+    return result
 
+
+# Script de test et de démo :
+import matplotlib.pyplot as plt
+import random
+init_fibo(42)
+h = [get_random_fibo() for _ in range(1000000)]
+n = [h.count(i) for i in range(RANDOM_MAX)]
+print("Couverture =", len(set(h)) / RANDOM_MAX * 100, "%")
+plt.hist(h)
+plt.show()
+plt.plot(n)
+plt.show()
