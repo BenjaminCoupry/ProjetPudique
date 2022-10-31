@@ -12,7 +12,7 @@ class S:
 
 def init_fibo(seed):
     """
-    seed : Entier < RANDOM_MAX et > 0
+    seed : Entier >= 2
     """
     S.fibo_seed = seed
     for i in range(FIBO_HISTORY_LENGHT):
@@ -20,7 +20,8 @@ def init_fibo(seed):
 
 def get_random_fibo():
     """
-    Génère et renvoie le nombre suivant à partir de l'actuel, dans [0 ; RANDOM_MAX[ selo Fibo.
+    Génère et renvoie le nombre suivant à partir des précedents et de la seed,
+    dans [0 ; RANDOM_MAX[ selon Fibo.
     """
     result = 0;
     for i in range(FIBO_HISTORY_LENGHT):
