@@ -1,4 +1,3 @@
-import math
 RANDOM_MAX = 257
 FIBO_HISTORY_LENGHT = 5
 
@@ -40,7 +39,9 @@ def random_byte():
     Entier aléatoire entre 0 et 255.
     Le générateur doit déjà avoir été initialisé avec init_fibo().
     """
-    result = get_random_fibo()%256
+    result = get_random_fibo()
+    while result >= 256:
+        result = get_random_fibo()
     return result
 
 
@@ -59,9 +60,35 @@ def random_integer_bits(nb_bits):
         result |= random_byte() & (0xFF >> (8-nb_bits))  # Les nb_bits premiers bits de l'octet aléatoire
     return result
 
+
+def nb_bits_for_range(n):
+    """
+    Renvoie le nombre de bits nécessaires pour écrire n nombre différents.
+    En gros c'est (int) log2(n) + 1 mais à mains nues.
+    """
+    nb_bits = 1
+    limit = 2
+    limit2 = limit * limit
+    while limit2 <= n:
+        nb_bits *= 2
+        limit = limit2
+        limit2 = limit * limit
+    while limit < n:
+        nb_bits += 1
+        limit *= 2
+    return nb_bits
+
+
 def get_random_range(a,b):
-    nbbits = max(8,round(math.log(b-a+1)/math.log(2))+1)
-    return a+(random_integer_bits(nbbits)%(b-a))
+    """
+    Entier aléatoire : a inclus, b exclu. b > a.
+    """
+    size = b - a
+    nb_bits = nb_bits_for_range(size)
+    rand = random_integer_bits(nb_bits)
+    while rand >= size:
+        rand = random_integer_bits(nb_bits)
+    return a + rand
 
 
 # Script de test et de démo :
