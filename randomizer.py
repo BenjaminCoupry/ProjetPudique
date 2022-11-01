@@ -1,5 +1,5 @@
 RANDOM_MAX = 257
-FIBO_HISTORY_LENGHT = 5
+FIBO_HISTORY_LENGHT = 10
 
 class S:
     """
@@ -27,7 +27,7 @@ def get_random_fibo():
     for i in range(FIBO_HISTORY_LENGHT):
         coeff = (i*S.fibo_seed + S.fibo_history[0]) % 5
         power = (i + S.fibo_seed + S.fibo_history[1] % 2) % 53
-        result += coeff * S.fibo_history[i] ** power
+        result += (coeff * S.fibo_history[i] ** power) + S.fibo_history[2] + 3
         result %= RANDOM_MAX
     S.fibo_history.append(result)
     del S.fibo_history[0]
