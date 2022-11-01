@@ -1,21 +1,20 @@
+from time import time
 import randomizer
 from numba import njit
+import random
 
 @njit
-def puissance_rapide_modulaire(x,n,m):
-    xm = x%m
-    k=xm
-    acc = 1
-    while n>1:
-        k2 = (k*k)%m
-        if n%2==0:
-            k = k2
-            n = n//2
-        else:
-            acc = (acc * k) % m
-            k = k2
-            n= (n-1)//2
-    return (k * acc) % m
+def powmod(b, e, m):
+    r = 1
+    b = b % m
+    if (b == 0):
+         return 0
+    while (e > 0) :
+        if (e % 2) :
+            r = (r * b) % m
+        e = e >> 1
+        b = (b ** 2) % m
+    return r
     
 @njit
 def first_decomp(n):
@@ -26,7 +25,7 @@ def first_decomp(n):
         s+=1
     return s,d
 
-@njit
+
 def miller_indicator(n,s,d,a):
     x=puissance_rapide_modulaire(a,d,n)
     if x==1 or x==n-1:
@@ -36,18 +35,38 @@ def miller_indicator(n,s,d,a):
             x = ((x%n)*(x%n))%n
             if x == n-1:
                 return False
+    print(x,a,d,n)
     return True
 
 def miller_test(n,k=25):
+    if n<=3 :
+        return False
     s,d = first_decomp(n-1)
     for i in range(k):
         a = randomizer.get_random_range(2,n-1)
         if miller_indicator(n,s,d,a):
+            print(n,s,d,a)
             return False
     return True
 
+def generate_prime(nb_bits):
+    u=0
+    found = False
+    N=0
+    while not found:
+        N+=1
+        #u = randomizer.random_integer_bits(nb_bits)
+        u = random.randint(10,2**nb_bits)
+        found = miller_test(u)
+        print('notfound',N, u)
+    return u
+
 randomizer.init_fibo(42)
-for i in range(10,1000000):
-    #u=randomizer.random_integer_bits(10)
-    miller_test(i)
-print('done')
+
+#print(generate_prime(50))
+
+
+
+
+print(puissance_rapide_modulaire(261782776236,39336250395,314690003161))
+print(powmod(261782776236,39336250395,314690003161))
