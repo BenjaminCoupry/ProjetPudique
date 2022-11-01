@@ -89,17 +89,3 @@ def get_random_range(a,b):
     while rand >= size:
         rand = random_integer_bits(nb_bits)
     return a + rand
-
-
-# Script de test et de démo :
-#import matplotlib.pyplot as plt
-#NB_BITS = 65
-#init_fibo(42)
-#for i in range(100):
-#    print(get_random_range(1,6))
-#h = [random_integer_bits(NB_BITS) for _ in range(10000)]
-#print("Couverture =", len(set(h)) / 2**NB_BITS * 100, "%")
-# Matlplotlib ne sait pas gérer les nombres de plus de 64 bits,
-# on affiche donc seulement le 64 bits de poids fort :
-#plt.hist([i >> (NB_BITS - 64) for i in h])
-#plt.show()
