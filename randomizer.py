@@ -61,6 +61,18 @@ def random_integer_bits(nb_bits):
     return result
 
 
+def random_odd_bits(nb_bits):
+    """
+    Génère une nombre impair sur nb_bits.
+    Le générateur doit déjà avoir été initialisé avec init_fibo().
+    """
+    result = 2 * random_integer_bits(nb_bits - 1) + 1
+    while result >= 2 ** nb_bits:
+        result = 2 * random_integer_bits(nb_bits - 1) + 1
+    return result
+
+
+
 def nb_bits_for_range(n):
     """
     Renvoie le nombre de bits nécessaires pour écrire n nombre différents.
