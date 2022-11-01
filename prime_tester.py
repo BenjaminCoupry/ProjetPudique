@@ -1,19 +1,23 @@
 import randomizer
+from numba import njit
 
+@njit
 def puissance_rapide_modulaire(x,n,m):
     xm = x%m
     k=xm
+    acc = 1
     while n>1:
         k2 = (k*k)%m
         if n%2==0:
             k = k2
             n = n//2
         else:
-            k = (xm*k2)%m
+            acc = (acc * k) % m
+            k = k2
             n= (n-1)//2
-    return k
+    return (k * acc) % m
     
-
+@njit
 def first_decomp(n):
     d=n
     s=0
@@ -22,6 +26,7 @@ def first_decomp(n):
         s+=1
     return s,d
 
+@njit
 def miller_indicator(n,s,d,a):
     x=puissance_rapide_modulaire(a,d,n)
     if x==1 or x==n-1:
@@ -42,7 +47,7 @@ def miller_test(n,k=25):
     return True
 
 randomizer.init_fibo(42)
-for i in range(1000):
-    u=randomizer.random_integer_bits(10)
-    print(miller_test(u))
-print(u)
+for i in range(10,1000000):
+    #u=randomizer.random_integer_bits(10)
+    miller_test(i)
+print('done')
