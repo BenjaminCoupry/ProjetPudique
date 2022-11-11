@@ -1,6 +1,4 @@
-from time import time
 import randomizer
-import random
 
 def puissance_rapide_modulaire(b, e, m):
     r = 1

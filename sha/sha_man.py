@@ -2,7 +2,7 @@
 Toutes les notations et noms de fonctions sont ceux de la page wikipédia
 de SHA-2 : https://fr.wikipedia.org/wiki/SHA-2
 '''
-import sha_pitre as sp
+from . import sha_pitre as sp
  
 
 def bourrage(data):
@@ -65,11 +65,4 @@ def sha_256_sum(data):
         intermediate_H = compute_intermediate_hashes(W, H)
         H = [ (h + ih) % (sp.U32_MAX+1) for h, ih in zip(H,intermediate_H) ]
     return [ item for subl in map(lambda h : ((0xFF000000 & h) >> 24, (0xFF0000 & h) >> 16, (0xFF00 & h) >> 8, 0xFF & h) , H ) for item in subl ]
-
-TXT = "azerty"
-data = [ord(c) for c in TXT]
-s = sha_256_sum(data)
-for b in s:
-    print("{:02x}".format(b), end='')
-print()
 
