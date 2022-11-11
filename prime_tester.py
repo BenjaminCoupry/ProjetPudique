@@ -51,10 +51,7 @@ def generate_prime(nb_bits):
     N=0
     while not found:
         N+=1
-        u = randomizer.random_integer_bits(nb_bits)
+        u = randomizer.random_odd_bits(nb_bits)
         found = miller_test(u)
     return u
-
-randomizer.init_fibo(42)
-print(generate_prime(3000))
 
