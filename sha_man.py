@@ -30,8 +30,12 @@ def build_W(block):
     '''
     W = [ block[i]*256**3 + block[i+1]*256**2 + block[i+2]*256 + block[i+3] for i in range(0, 64, 4) ]
     for t in range(16, 64):
-        W.append( (sp.small_sigma_1_256(W[t-2]) + W[t-7] + sp.small_sigma_0_256(W[t-15]) + W[t-16]) % sp.U32_MAX )
-    print("W =", W)
+        t1 = sp.small_sigma_1_256(W[t-2])
+        t2 =  W[t-7]
+        t3 =  sp.small_sigma_0_256(W[t-15])
+        t4 =  W[t-16]
+        sum = (t1+t2+t3+t4)% (sp.U32_MAX+1)
+        W.append(sum )
     return W
 
 
@@ -44,7 +48,7 @@ def compute_intermediate_hashes(W, H):
     for t in range(64):
         t1 = h + sp.big_sigma_1_256(e) + sp.ch(e, f, g) + sp.K_256[t] + W[t]
         t2 = sp.big_sigma_0_256(a) + sp.maj(a, b, c)
-        h, g, f, e, d, c, b, a = g, f, e, (d+t1) % sp.U32_MAX, c, b, a, (t1+t2) % sp.U32_MAX
+        h, g, f, e, d, c, b, a = g, f, e, (d+t1) % (sp.U32_MAX+1), c, b, a, (t1+t2) % (sp.U32_MAX+1)
     return a, b, c, d, e, f, g, h
 
 
@@ -55,18 +59,15 @@ def sha_256_sum(data):
     '''
     H = [h for h in sp.H_0]
     padded_data = data + bourrage(data)
-    print(padded_data, "\n\n")
     for i in range(len(padded_data) // 64):
-        block = padded_data[i:i+64]
+        block = padded_data[i*64:(i+1)*64]
         W = build_W(block)
         intermediate_H = compute_intermediate_hashes(W, H)
-        print(intermediate_H)
-        H = [ (h + ih) % sp.U32_MAX for h, ih in zip(H,intermediate_H) ]
-        print(H, "\n\n")
+        H = [ (h + ih) % (sp.U32_MAX+1) for h, ih in zip(H,intermediate_H) ]
     return [ item for subl in map(lambda h : ((0xFF000000 & h) >> 24, (0xFF0000 & h) >> 16, (0xFF00 & h) >> 8, 0xFF & h) , H ) for item in subl ]
 
-
-data = [ord(c) for c in "BONJOUR"]
+TXT = "azerty"
+data = [ord(c) for c in TXT]
 s = sha_256_sum(data)
 for b in s:
     print("{:02x}".format(b), end='')
